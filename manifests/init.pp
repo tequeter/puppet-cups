@@ -1,6 +1,7 @@
 # Manages the Common UNIX Printing System (CUPS)
 class cups (
-  $default_printer         = undef,
+  Optional[Pattern[/\A[^[:blank:]\/#]+\Z/]] $default_printer = undef,
+
   $package_ensure          = $::cups::params::package_ensure,
   $package_name            = $::cups::params::package_name,
   $package_install_options = $::cups::params::package_install_options,
@@ -33,9 +34,6 @@ class cups (
   }
 
   if $default_printer {
-    validate_string($default_printer)
-    validate_re($default_printer, '^[^[:blank:]/#]+$')
-
     exec { 'default_printer':
       command => "lpoptions -d ${default_printer}",
       unless  => "grep -q \'^Default ${default_printer}$\' /etc/cups/lpoptions",
